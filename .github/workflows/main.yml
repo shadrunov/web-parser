@@ -1,4 +1,4 @@
-name: Do things every 5 minutes
+name: Scan sites
 
 on:
   schedule:
