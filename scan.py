@@ -1,7 +1,13 @@
 from datetime import datetime
+import os
 import requests
 from bs4 import BeautifulSoup
-from settings import settings
+
+
+class settings:
+    bot_token = os.environ.get("BOT_TOKEN")
+    bot_url = "https://api.telegram.org/bot{}/sendMessage"
+    bot_chat_id = os.environ.get("BOT_CHAT_ID")
 
 
 def send_results(msg: str) -> str:
