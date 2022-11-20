@@ -2,7 +2,7 @@ name: Scan sites
 
 on:
   schedule:
-    - cron: "00 18 * * *"
+    - cron: "30 16 * * *"
 
 jobs:
   run:
