@@ -104,7 +104,7 @@ def parse_moskino() -> str:
         print(e.args)
         msg += f"error: {e.args}"
     else:
-        msg += " - " + "\n - ".join(res) if res else "ничего на завтра :( \n"
+        msg += " - " + "\n - ".join(res) if res else "ничего на завтра :("
 
     # day after tomorrow
     res = []
@@ -148,7 +148,46 @@ def parse_moskino() -> str:
         print(e.args)
         msg += f"error: {e.args}"
     else:
-        msg += " - " + "\n - ".join(res) if res else "ничего на завтра :( \n"
+        msg += " - " + "\n - ".join(res) if res else "ничего на завтра :("
+
+    return msg
+
+
+def parse_illuzion() -> str:
+
+    msg = ""
+    res = []
+
+    url = f"https://illuzion-cinema.ru/schedule/"
+    msg += f'parsing page: <a href="{url}">Иллюзион</a> \n'
+
+    try:
+        page = requests.get(url, verify=False)
+        soup = BeautifulSoup(page.content, "html.parser")
+
+        films = soup.findAll(
+            lambda e: e.name == "div"
+            and e.get("class") == ["schedule-film-available"]
+            and "ЗАРЕГИСТРИРОВАТЬСЯ" in e.text
+        )
+
+        for film in films:
+            day = film.findParent().findParent().findParent().findChild("h2").text
+            title = film.findChild("span", class_="schedule-film__name").text.strip()
+            time = film.findChild("span", class_="schedule-film__time").text
+            link = film.findChild("a", class_="schedule-film__btn")["href"]
+
+            title = title.replace("БОЛЬШОЙ ЗАЛ. Архивное кино. ", "")
+
+            print(f"{day}, {time}: {title} (link: {link})")
+            if not ("лекция" in title.lower() or "презентация" in title.lower()):
+                res.append(f'{day}, {time}: (<a href="{link}">{title}</a>)')
+
+    except Exception as e:
+        print(e.args)
+        msg += f"error: {e.args}"
+    else:
+        msg += " - " + "\n - ".join(res) if res else "ничего на завтра :("
 
     return msg
 
@@ -157,7 +196,8 @@ if __name__ == "__main__":
     print("start parsing")
 
     msg = parse_novaya_opera() + "\n\n"
-    msg += parse_moskino()
+    msg += parse_moskino() + "\n\n"
+    msg += parse_illuzion()
 
     print("------\n")
 
