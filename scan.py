@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date, timedelta
 import os
 import requests
 from bs4 import BeautifulSoup
@@ -34,8 +34,7 @@ def parse_novaya_opera() -> str:
 
     URL = "https://novayaopera.ru/events/news/promokod-dlya-studentov-na-spektakli-novoy-opery/"
     print(f"parsing page: {URL}")
-    msg += f'parsing page: <a href="{URL}">Новая опера</a> \n\n'
-    msg += f"<b>results: </b> \n"
+    msg += f'parsing page: <a href="{URL}">Новая опера</a> \n'
 
     try:
         page = requests.get(URL, verify=False)
@@ -55,9 +54,112 @@ def parse_novaya_opera() -> str:
     return msg
 
 
+def parse_moskino() -> str:
+
+    msg = ""
+    res = []
+
+    today = date.today()
+    tomorrow = (today + timedelta(days=1)).strftime("%Y-%m-%d")
+    day_after_tomorrow = (today + timedelta(days=2)).strftime("%Y-%m-%d")
+
+    # tomorrow
+    url = f"https://mos-kino.ru/schedule/?date={tomorrow}"
+    msg += f'parsing page: <a href="{url}">Москино (завтра, {tomorrow})</a> \n'
+
+    try:
+        page = requests.get(url, verify=False)
+        soup = BeautifulSoup(page.content, "html.parser")
+
+        films = soup.findAll(
+            lambda e: e.name == "div"
+            and e.get("class") == ["schedule-item"]
+            and e.findChild("span", class_="price").text == "Регистрация"
+        )
+
+        films_parsed = {}
+
+        for film in films:
+            title = film.findChild("div", class_="title").contents[0].strip()
+            info = film.findChild("div", class_="title").findChild("small").text
+            time = film.findChild("span", class_="time").text
+            link = film.findChild("a", href=True).get("href")
+
+            if title in films_parsed:
+                films_parsed[title]["time"].append((time, link))
+            else:
+                films_parsed[title] = {
+                    "time": [(time, link)],
+                    "info": info,
+                }
+            print(f"{time}: {title} (link: {link})")
+
+        for film in films_parsed:
+            info = films_parsed[film]["info"]
+            times = [f'<a href="{t[1]}">{t[0]}</a>' for t in films_parsed[film]["time"]]
+            record = f"{film} {info}: {', '.join(times)}"
+            res.append(record)
+
+    except Exception as e:
+        print(e.args)
+        msg += f"error: {e.args}"
+    else:
+        msg += " - " + "\n - ".join(res) if res else "ничего на завтра :( \n"
+
+    # day after tomorrow
+    res = []
+    url = f"https://mos-kino.ru/schedule/?date={day_after_tomorrow}"
+    msg += f'\n\nparsing page: <a href="{url}">Москино (послезавтра, {day_after_tomorrow})</a> \n'
+
+    try:
+        page = requests.get(url, verify=False)
+        soup = BeautifulSoup(page.content, "html.parser")
+
+        films = soup.findAll(
+            lambda e: e.name == "div"
+            and e.get("class") == ["schedule-item"]
+            and e.findChild("span", class_="price").text == "Регистрация"
+        )
+
+        films_parsed = {}
+
+        for film in films:
+            title = film.findChild("div", class_="title").contents[0].strip()
+            info = film.findChild("div", class_="title").findChild("small").text
+            time = film.findChild("span", class_="time").text
+            link = film.findChild("a", href=True).get("href")
+
+            if title in films_parsed:
+                films_parsed[title]["time"].append((time, link))
+            else:
+                films_parsed[title] = {
+                    "time": [(time, link)],
+                    "info": info,
+                }
+            print(f"{time}: {title} (link: {link})")
+
+        for film in films_parsed:
+            info = films_parsed[film]["info"]
+            times = [f'<a href="{t[1]}">{t[0]}</a>' for t in films_parsed[film]["time"]]
+            record = f"{film} {info}: {', '.join(times)}"
+            res.append(record)
+
+    except Exception as e:
+        print(e.args)
+        msg += f"error: {e.args}"
+    else:
+        msg += " - " + "\n - ".join(res) if res else "ничего на завтра :( \n"
+
+    return msg
+
+
 if __name__ == "__main__":
     print("start parsing")
-    # send_results(parse_novaya_opera())
-    msg = parse_novaya_opera()
+
+    msg = parse_novaya_opera() + "\n\n"
+    msg += parse_moskino()
+
+    print("------\n")
+
     print("message: \n", msg)
     print(send_results(msg))
