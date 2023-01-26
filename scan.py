@@ -148,7 +148,7 @@ def parse_moskino() -> str:
         print(e.args)
         msg += f"error: {e.args}"
     else:
-        msg += " - " + "\n - ".join(res) if res else "ничего на завтра :("
+        msg += " - " + "\n - ".join(res) if res else "ничего на послезавтра :("
 
     return msg
 
