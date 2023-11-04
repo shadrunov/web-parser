@@ -36,7 +36,7 @@ def parse_bolshoi() -> str:
                     message += f"{text.text}"
 
                 if "молодёжный" in message.lower() or (
-                    "специальным" in message.lower() and "тарифам" in message.lower()
+                    "специальн" in message.lower() and "тарифам" in message.lower()
                 ):
                     print(message)
                     res.append(message)
