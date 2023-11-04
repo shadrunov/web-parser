@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
 import requests
-from sites import parse_novaya_opera, parse_bolshoi, parse_illuzion, parse_moskino
+from sites import parse_novaya_opera, parse_bolshoi
 
 
 class settings:
@@ -31,8 +31,6 @@ if __name__ == "__main__":
     print("start parsing")
 
     msg = parse_novaya_opera() + "\n\n"
-    msg += parse_moskino() + "\n\n"
-    msg += parse_illuzion()
     msg += parse_bolshoi()
 
     print("------\n")
