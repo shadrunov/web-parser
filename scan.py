@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
 import requests
-from sites import parse_novaya_opera, parse_bolshoi
+from sites import parse_novaya_opera, parse_bolshoi, parse_illuzion, parse_moskino
 
 
 class settings:
@@ -31,11 +31,14 @@ if __name__ == "__main__":
     print("start parsing")
 
     msg = parse_novaya_opera() + "\n\n"
-    # msg += parse_moskino() + "\n\n"
-    # msg += parse_illuzion()
+    msg += parse_moskino() + "\n\n"
+    msg += parse_illuzion()
     msg += parse_bolshoi()
 
     print("------\n")
 
     print("message: \n", msg)
-    print(send_results(msg))
+    res = send_results(msg)
+    print(res)
+    if res["ok"] is False:
+        send_results("Panic and failure =)")

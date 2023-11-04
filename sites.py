@@ -1,4 +1,5 @@
 import requests
+from html import escape
 from bs4 import BeautifulSoup
 from datetime import date, timedelta
 
@@ -43,6 +44,7 @@ def parse_bolshoi() -> str:
     except Exception as e:
         print(e.args)
         msg += f"error: {e.args}"
+        msg = escape(msg)
     else:
         msg += " - " + "\n - ".join(res)
 
@@ -69,6 +71,7 @@ def parse_novaya_opera() -> str:
     except Exception as e:
         print(e.args)
         msg += f"error: {e.args}"
+        msg = escape(msg)
     else:
         msg += " - " + "\n - ".join(res)
 
@@ -123,6 +126,7 @@ def parse_moskino() -> str:
     except Exception as e:
         print(e.args)
         msg += f"error: {e.args}"
+        msg = escape(msg)
     else:
         msg += " - " + "\n - ".join(res) if res else "ничего на завтра :("
 
@@ -167,6 +171,7 @@ def parse_moskino() -> str:
     except Exception as e:
         print(e.args)
         msg += f"error: {e.args}"
+        msg = escape(msg)
     else:
         msg += " - " + "\n - ".join(res) if res else "ничего на послезавтра :("
 
@@ -205,6 +210,7 @@ def parse_illuzion() -> str:
     except Exception as e:
         print(e.args)
         msg += f"error: {e.args}"
+        msg = escape(msg)
     else:
         msg += " - " + "\n - ".join(res) if res else "ничего на завтра :("
 
